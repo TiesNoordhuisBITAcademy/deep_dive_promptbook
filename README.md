@@ -33,6 +33,8 @@ docker run -p 8000:8000 --link deep_dive_database_container:db --name deep_dive_
 
 ## database
 
+From the `/database` folder.
+
 ```bash
 docker stop deep_dive_database_container
 docker rm deep_dive_database_container
