@@ -7,9 +7,19 @@
     <script src="script.js" defer></script>
 </head>
 <body>
+    <h1>Available prompts</h1>
+    <div id="prompt-options-display"></div>
+    <hr>
     <h1 id="prompt-title"></h1>
     <textarea name="prompt" id="prompt" cols="100" rows="20"></textarea>
     <button id="askChatGPT">Ask ChatGPT</button>
     <button id="saveNewPrompt">Save as new prompt</button>
+    <template id="prompt-option">
+        <div>
+            <h2></h2>
+            <p></p>
+            <button>Start</button>
+        </div>
+    </template>
 </body>
 </html>

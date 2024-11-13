@@ -1,19 +1,30 @@
-const promptId = 4;
+const promptTemplate = document.getElementById('prompt-option');
+const promptOptionsDisplay = document.getElementById('prompt-options-display');
 const promptTitleElement = document.getElementById('prompt-title');
 const promptTextarea = document.getElementById('prompt');
 const askButton = document.getElementById('askChatGPT');
 const saveButton = document.getElementById('saveNewPrompt');
 
-fetch(`http://localhost:8000/composite_prompts/${promptId}/expanded`)
-    .then(response => response.json())
-    .then(promptData => {
-        promptTitleElement.innerText = promptData.title;
-        let promptText = '';
-        promptData.fragments.forEach(fragment => {
-            promptText += fragment.content;
-            promptText += '\n\n';
+const selectPrompt = (promptId) => {
+    fetch(`http://localhost:8000/composite_prompts/${promptId}/expanded`)
+        .then(response => response.json())
+        .then(prompt => {
+            promptTextarea.value = prompt.fragments.reduce((acc, fragment) => {
+                return `${acc} \n\n${fragment.content}`;
+            }, '');
         });
-        promptTextarea.value = promptText;
+}
+
+fetch(`http://localhost:8000/composite_prompts`)
+    .then(response => response.json())
+    .then(composite_prompts => {
+        for (const composite_prompt of composite_prompts) {
+            const template = promptTemplate.content.cloneNode(true);
+            template.querySelector('h2').innerText = composite_prompt.title;
+            template.querySelector('p').innerText = composite_prompt.description;
+            template.querySelector('button').addEventListener('click', () => {selectPrompt(composite_prompt.id)});
+            promptOptionsDisplay.appendChild(template);
+        }
     });
 
 askButton.addEventListener('click', () => {
@@ -53,9 +64,5 @@ saveButton.addEventListener('click', async () => {
         body: JSON.stringify({
             "order_index": 0
         })
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-        });
+    });
 });
