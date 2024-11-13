@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt improver</title>
+    <script type="module" src="prebuilt-script.js"></script>
+</head>
+<body>
+    <h1>Available prompts</h1>
+    <div id="prompt-options-display"></div>
+    
+    <h1>Build your own prompt</h1>
+    <textarea name="custom-prompt" id="custom-prompt" rows="30" cols="100"></textarea>
+    <button id="custom-prompt-submit">Go to ChatGPT</button>
+    <template id="prompt-option">
+        <div>
+            <h2></h2>
+            <p></p>
+            <button>Start</button>
+        </div>
+    </template>
+</body>
+</html>

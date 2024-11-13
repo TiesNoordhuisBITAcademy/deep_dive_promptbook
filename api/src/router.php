@@ -55,6 +55,16 @@ $routes = [
     ['delete',  '/^context_files\/([0-9]+)$/i', 'ContextFileResource', 'delete'],
 ];
 
+// Disable CORS errors
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+
+// handle preflight requests
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    header("Access-Control-Allow-Headers: Content-Type");
+    exit();
+}
+
 // Get the HTTP method
 $methodName = match ($_SERVER['REQUEST_METHOD']) {
     'POST' => 'post',
