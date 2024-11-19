@@ -1,17 +1,23 @@
-const promptTemplate = document.getElementById('prompt-option');
-const promptOptionsDisplay = document.getElementById('prompt-options-display');
+const promptTemplate = document.getElementById('prompts-overview-template');
+const promptOverview = document.getElementById('prompts-overview');
 const promptTitleElement = document.getElementById('prompt-title');
-const promptTextarea = document.getElementById('prompt');
-const askButton = document.getElementById('askChatGPT');
-const saveButton = document.getElementById('saveNewPrompt');
+const promptFragmentTemplate = document.getElementById('prompt-fragment-template');
+const promptFragmentsOverview = document.getElementById('prompt-fragments-overview');
+const authorOptionTemplate = document.getElementById('author-option-template');
+const authorSelect = document.getElementById('prompt-fragment-add-author');
+const promptFragmentAddFrom = document.getElementById('prompt-fragment-add');
+let selectedPromptId;
+
 
 const selectPrompt = (promptId) => {
     fetch(`http://localhost:8000/composite_prompts/${promptId}/expanded`)
         .then(response => response.json())
         .then(prompt => {
-            promptTextarea.value = prompt.fragments.reduce((acc, fragment) => {
-                return `${acc} \n\n${fragment.content}`;
-            }, '');
+            selectedPromptId = prompt.id;
+            clearPromptFragments();
+            prompt.fragments.forEach(fragment => {
+                addFragmentToOverview(fragment);
+            })
         });
 }
 
@@ -19,50 +25,81 @@ fetch(`http://localhost:8000/composite_prompts`)
     .then(response => response.json())
     .then(composite_prompts => {
         for (const composite_prompt of composite_prompts) {
-            const template = promptTemplate.content.cloneNode(true);
-            template.querySelector('h2').innerText = composite_prompt.title;
-            template.querySelector('p').innerText = composite_prompt.description;
-            template.querySelector('button').addEventListener('click', () => {selectPrompt(composite_prompt.id)});
-            promptOptionsDisplay.appendChild(template);
+            addPromptToOverview(composite_prompt);
         }
     });
 
-askButton.addEventListener('click', () => {
-    window.location.href = `https://chat.openai.com/?q=${promptTextarea.value}`;
-});
-
-saveButton.addEventListener('click', async () => {
-    const newPrompt = await fetch(`http://localhost:8000/composite_prompts`, {
-        method: 'POST',
-        body: JSON.stringify({
-            "author_id": 1,
-            "title": "New Prompt",
-            "description": "default description"
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-            return data;
-        });
-    const newFragment = await fetch(`http://localhost:8000/prompt_fragments`, {
-        method: 'POST',
-        body: JSON.stringify({
-            "author_id": 1,
-            "content": promptTextarea.value,
-            "description": "default description fragment",
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-            return data
-        });
-
-    fetch(`http://localhost:8000/composite_prompts/${newPrompt.id}/fragments/${newFragment.id}`, {
-        method: 'POST',
-        body: JSON.stringify({
-            "order_index": 0
-        })
+fetch(`http://localhost:8000/authors`)
+    .then(response => response.json())
+    .then(authors => {
+        for (const author of authors) {
+            addAuthorToOptions(author);
+        }
     });
+
+addAuthorToOptions = (author) => {
+    const template = authorOptionTemplate.content.cloneNode(true);
+    template.querySelector('option').innerText = author.name;
+    template.querySelector('option').value = author.id;
+    authorSelect.appendChild(template);
+}
+
+promptFragmentAddFrom.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const content = event.target.querySelector('textarea').value;
+    const authorId = event.target.querySelector('select').value;
+    const description = event.target.querySelector('input#prompt-fragment-add-description').value;
+
+    const newFragment = await fetch('http://localhost:8000/prompt_fragments', {
+        method: 'POST',
+        body: JSON.stringify({
+            author_id: authorId,
+            content: content,
+            description: description,
+        }),
+    }).then(response => response.json());
+
+    const order_index = event.target.querySelector('input#order-index').value;
+    
+    fetch(`http://localhost:8000/composite_prompts/${selectedPromptId}/fragments/${newFragment.id}`,
+        {
+            method: 'POST',
+            body: JSON.stringify({
+                order_index: order_index,
+            })
+        }
+    );
+
+    addFragmentToOverview(newFragment);
 });
+
+
+function addPromptToOverview(prompt) {
+    const template = promptTemplate.content.cloneNode(true);
+    template.querySelector('details summary').innerText = prompt.title;
+    template.querySelector('details span').innerText = prompt.description;
+    template.querySelector('button').addEventListener('click', () => {selectPrompt(prompt.id)});
+    promptOverview.appendChild(template);
+}
+
+function addFragmentToOverview(fragment) {
+    const template = promptFragmentTemplate.content.cloneNode(true);
+    template.querySelector('.prompt-fragment-content').innerText = fragment.content;
+    template.querySelector('button').addEventListener('click', (event) => {
+        deletePromptFragment(fragment.id);
+        event.target.parentElement.remove();
+    });
+    promptFragmentsOverview.appendChild(template);
+}
+
+function clearPromptFragments() {
+    promptFragmentsOverview.innerHTML = '';
+}
+
+function deletePromptFragment(fragmentId) {
+    fetch(`http://localhost:8000/prompt_fragments/${fragmentId}`, {
+        method: 'DELETE',
+    });
+
+
+}

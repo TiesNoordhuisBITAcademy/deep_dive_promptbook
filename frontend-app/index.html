@@ -4,22 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
 </head>
 <body>
     <h1>Available prompts</h1>
-    <div id="prompt-options-display"></div>
+    <div id="prompts-overview"></div>
     <hr>
-    <h1 id="prompt-title"></h1>
-    <textarea name="prompt" id="prompt" cols="100" rows="20"></textarea>
-    <button id="askChatGPT">Ask ChatGPT</button>
-    <button id="saveNewPrompt">Save as new prompt</button>
-    <template id="prompt-option">
+    <h1>Composite Prompt: <span id="prompt-title"></span></h1>
+    <div id="prompt-fragments-overview"></div>
+    <form id="prompt-fragment-add" method="post">
+        <select name="author" id="prompt-fragment-add-author"></select>
         <div>
-            <h2></h2>
-            <p></p>
-            <button>Start</button>
+            <label for="order-index">Order index</label>
+            <input type="number" name="index" id="order-index">
+        </div>
+        <div>
+            <label for="prompt-fragment-add-description">Description</label>
+            <input type="text" name="description" id="prompt-fragment-add-description">
+        </div>
+        <div>
+            <label for="prompt-fragment-add-content">Content</label>
+            <textarea name="content" id="prompt-fragment-add-content" rows="5"></textarea>
+        </div>
+        <button type="submit" class="button is-green">Add Fragment</button>
+    </form>
+
+    <template id="author-option-template">
+        <option value=""></option>
+    </template>
+
+    <template id="prompt-fragment-template">
+        <div class="prompt-fragment-item">
+            <button class="button is-danger">Remove</button>
+            <div class="prompt-fragment-content"></div>
         </div>
     </template>
+
+    <template id="prompts-overview-template">
+        <div class="prompts-overview-item">
+            <button class="button is-green">Use: </button>
+            <details><summary></summary><span></span></details>
+        </div>
+    </template>
+    
 </body>
 </html>

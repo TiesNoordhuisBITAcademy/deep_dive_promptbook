@@ -1,0 +1,35 @@
+.prompts-overview-item, .prompt-fragment-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.button {
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 5px;
+}
+
+.prompts-overview-item details summary {
+    font-weight: bolder;
+    font-size: larger
+}
+
+.is-green {
+    background-color: lightseagreen;
+    color: white;
+}
+
+.is-danger {
+    background-color: red;
+    color: white;
+}
+
+#prompt-fragment-add {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
