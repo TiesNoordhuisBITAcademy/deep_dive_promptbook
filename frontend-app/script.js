@@ -6,6 +6,7 @@ const promptFragmentsOverview = document.getElementById('prompt-fragments-overvi
 const authorOptionTemplate = document.getElementById('author-option-template');
 const authorSelect = document.getElementById('prompt-fragment-add-author');
 const promptFragmentAddFrom = document.getElementById('prompt-fragment-add');
+const askPromptButton = document.getElementById('ask-prompt-button');
 let selectedPromptId;
 
 
@@ -73,6 +74,27 @@ promptFragmentAddFrom.addEventListener('submit', async (event) => {
     addFragmentToOverview(newFragment);
 });
 
+askPromptButton.addEventListener('click', async () => {
+    let collectedPrompt = '';
+    document.querySelectorAll('.prompt-fragment-content')
+        .forEach((element) => {
+            collectedPrompt += element.innerText;
+        })
+    fetch(`http://localhost:11434/api/generate`, {
+        method: 'POST',
+        body: JSON.stringify({
+            "model": "llama3.2",
+            "prompt": collectedPrompt,
+            "stream": false
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            const responseElement = document.getElementById('prompt-response');
+            responseElement.innerText = data.response;
+        });
+});
+
 
 function addPromptToOverview(prompt) {
     const template = promptTemplate.content.cloneNode(true);
@@ -103,3 +125,4 @@ function deletePromptFragment(fragmentId) {
 
 
 }
+
