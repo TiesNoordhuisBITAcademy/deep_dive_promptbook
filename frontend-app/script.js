@@ -122,7 +122,5 @@ function deletePromptFragment(fragmentId) {
     fetch(`http://localhost:8000/prompt_fragments/${fragmentId}`, {
         method: 'DELETE',
     });
-
-
 }
 

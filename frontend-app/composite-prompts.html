@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>overview</title>
+    <link rel="stylesheet" href="composite-prompts.css">
+    <script type="module" src="promptbook.js" defer></script>
+    <script type="module" src="composite-prompts.js" defer></script>
+</head>
+<body>
+    <h1>Composite prompts</h1>
+    <div class="row">
+        <div id="overview-container" class="column grow-1">
+            <h2>Current prompts</h2>
+            <div id="composite-prompts-list"></div>
+        </div>
+        <div id="detail-container" class="column grow-2"></div>
+    </div>
+    
+    <template id="composite-prompt-list-item-template">
+        <div class="column">
+            <h3 class="composite-prompt-title"></h3>
+            <div class="composite-prompt-description"></div>
+            <button class="composite-prompt-detail-button">Select</button>
+        </div>
+    </template>
+</body>
+</html>
